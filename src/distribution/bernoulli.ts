@@ -17,7 +17,7 @@ export class BernoulliDistribution extends BaseDistributionMachine<number, boole
     }
 
     public setProbability(p: number) {
-        if (p > 1 || p < 0) throw new RangeError('Probability must greater than 0 and less than 1');
+        if (p > 1 || p < 0) throw new RangeError('Probability must be greater than 0 and less than 1');
         this.probability = p;
     }
 
