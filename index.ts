@@ -1,4 +1,4 @@
-export { LCG } from './src/generator/random';
+export { LCG } from './src/generator/lcg';
 export { IRandomGenerator, RandomGenerator } from './src/generator/base';
 
 export { BaseDistributionMachine } from './src/distribution/base';
