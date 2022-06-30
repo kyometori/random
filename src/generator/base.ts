@@ -3,7 +3,7 @@ export interface IRandomGenerator<T> {
 }
 
 export abstract class RandomGenerator<T> implements IRandomGenerator<T> {
-    private seed: T;
+    protected seed: T;
     protected abstract nowValue: T;
     public randomNumber: IterableIterator<T>;
     constructor(seed: T) { 
