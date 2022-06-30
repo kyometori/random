@@ -27,6 +27,6 @@ export class LinearDistribution extends BaseDistributionMachine<number> {
     }
 
     public getValue(): number {
-        return this.randomGenerator.randomNumber.next().value % (this.max - this.min + 1) + this.min;
+        return Math.abs(this.randomGenerator.randomNumber.next().value) % (this.max - this.min + 1) + this.min;
     }
 }
