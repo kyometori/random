@@ -11,12 +11,12 @@ export class SubtractWithCarry extends RandomGenerator<number> {
 
     constructor(seed: number) {
         super(seed);
-        this.lags = SWC_LAGS[(seed >>> 3) % SWC_LAGS.length];
+        this.lags = SWC_LAGS[seed % SWC_LAGS.length];
         this.init();
     }
 
     private init(): void {
-        const initValueGen = new MT19937(this.seed >>> 3);
+        const initValueGen = new MT19937(this.seed);
         const diff = this.lags[1] - this.lags[0] + 1;
         this.sequence = new Array(diff);
 
