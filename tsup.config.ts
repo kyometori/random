@@ -8,7 +8,7 @@ export default defineConfig({
 	minify: false,
 	keepNames: true,
 	skipNodeModulesBundle: true,
-	sourcemap: true,
+	sourcemap: false,
 	target: 'es2021',
 	esbuildOptions: (options, context) => {
 		if (context.format === 'cjs') {
