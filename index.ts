@@ -4,3 +4,4 @@ export { IRandomGenerator, RandomGenerator } from './src/generator/base';
 
 export { IDistrbutionMachine, BaseDistributionMachine } from './src/distribution/base';
 export { LinearDistribution } from './src/distribution/linear';
+export { BernoulliDistribution } from './src/distribution/bernoulli';
