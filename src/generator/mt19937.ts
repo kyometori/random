@@ -32,7 +32,7 @@ export class MT19937 extends RandomGenerator<number> {
         }
     }
 
-    protected algorithm(): void {
+    protected override algorithm(): void {
         if (this.index === 0) this.generateNumbers();
 
         let y = this.randomNumbers[this.index];
