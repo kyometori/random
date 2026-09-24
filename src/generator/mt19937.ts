@@ -2,7 +2,7 @@ import { RandomGenerator } from './base';
 import { _32Bits } from '../constant';
 
 export class MT19937 extends RandomGenerator<number> {
-    protected nowValue: number;
+    protected nowValue: number = 0;
     private randomNumbers = new Array(624);
     private index = 0;
     constructor(seed: number) {

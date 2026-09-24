@@ -4,3 +4,5 @@ dist
 
 test.js
 test.mjs
+
+*.swp
