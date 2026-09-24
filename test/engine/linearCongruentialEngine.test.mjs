@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { defineLinearCongruentialEngine, RANDOM_ERROR_CODES, UInt32Type, UInt64Type } from '../../dist/index.mjs';
+import { defineLinearCongruentialEngine, RandomErrorCode, UInt32Type, UInt64Type } from '../../dist/index.mjs';
 
 const TestEngine = defineLinearCongruentialEngine(UInt32Type, {
   multiplier: 5n,
@@ -107,7 +107,7 @@ test('engine: rejects a seed outside the result type range', () => {
   assert.throws(
     () => new TestEngine(0x1_0000_0000n),
     (error) => (
-      error?.code === RANDOM_ERROR_CODES.OUT_OF_RANGE
+      error?.code === RandomErrorCode.OUT_OF_RANGE
     ),
   );
 });
@@ -128,7 +128,7 @@ test('engine: rejects an invalid seed sequence value', () => {
   assert.throws(
     () => new SeedSequenceEngine(seq),
     (error) => (
-      error?.code === RANDOM_ERROR_CODES.INVALID_SEED_SEQUENCE
+      error?.code === RandomErrorCode.INVALID_SEED_SEQUENCE
     ),
   );
 });
@@ -149,7 +149,7 @@ test('engine: rejects an incomplete seed sequence', () => {
   assert.throws(
     () => new SeedSequenceEngine(seq),
     (error) => (
-      error?.code === RANDOM_ERROR_CODES.INVALID_SEED_SEQUENCE
+      error?.code === RandomErrorCode.INVALID_SEED_SEQUENCE
     ),
   );
 });

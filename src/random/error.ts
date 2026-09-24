@@ -1,12 +1,9 @@
-export enum RANDOM_ERROR_CODES {
+export enum RandomErrorCode {
     INVALID_ARGUMENT,
     OUT_OF_RANGE,
     INVALID_STATE,
     INVALID_SEED_SEQUENCE
 }
-
-export type RandomErrorCode =
-  (typeof RANDOM_ERROR_CODES)[keyof typeof RANDOM_ERROR_CODES];
 
 /**
  * Error thrown by the random library.

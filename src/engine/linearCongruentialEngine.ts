@@ -1,6 +1,6 @@
 import type { SeedSequence, UniformRandomBitGenerator } from '../random/interfaces';
 import type { SeedResult, UInt, UInt32, UnsignedLongLong, UIntType } from '../random';
-import { UINT64_MAX, UInt32Type, RANDOM_ERROR_CODES, RandomError } from '../random';
+import { UINT64_MAX, UInt32Type, RandomErrorCode, RandomError } from '../random';
 
 export interface LinearCongruentialEngineDefinition<T extends UInt> {
   multiplier: T;
@@ -170,7 +170,7 @@ export abstract class LinearCongruentialEngine<T extends UInt>
     if (value instanceof LinearCongruentialEngine) {
       if (value.constructor !== this.constructor) {
         throw new RandomError(
-          RANDOM_ERROR_CODES.INVALID_ARGUMENT,
+          RandomErrorCode.INVALID_ARGUMENT,
           'The engine types must match.',
           {
             expected: this.constructor.name,
@@ -222,7 +222,7 @@ export abstract class LinearCongruentialEngine<T extends UInt>
 
       if (type.resultType === undefined) {
         throw new RandomError(
-          RANDOM_ERROR_CODES.INVALID_STATE,
+          RandomErrorCode.INVALID_STATE,
           'The result type is not available on the base engine.',
         );
       }
@@ -299,7 +299,7 @@ export abstract class LinearCongruentialEngine<T extends UInt>
   public discard(z: UnsignedLongLong): void {
     if (z < 0n || z > UINT64_MAX) {
       throw new RandomError(
-        RANDOM_ERROR_CODES.OUT_OF_RANGE,
+        RandomErrorCode.OUT_OF_RANGE,
         'The discard count is outside the unsigned long long range.',
         {
           z,
@@ -349,7 +349,7 @@ export abstract class LinearCongruentialEngine<T extends UInt>
       state = (type.resultType.cast(value as bigint)) % modulus;
     } catch (error) {
       throw new RandomError(
-        RANDOM_ERROR_CODES.OUT_OF_RANGE,
+        RandomErrorCode.OUT_OF_RANGE,
         'The seed is outside the result type range.',
         {
           value,
@@ -380,7 +380,7 @@ export abstract class LinearCongruentialEngine<T extends UInt>
       seq.generate(data);
     } catch (error) {
       throw new RandomError(
-        RANDOM_ERROR_CODES.INVALID_SEED_SEQUENCE,
+        RandomErrorCode.INVALID_SEED_SEQUENCE,
         'The seed sequence failed to generate values.',
         {
           cause: error,
@@ -395,7 +395,7 @@ export abstract class LinearCongruentialEngine<T extends UInt>
 
       if (word === undefined) {
         throw new RandomError(
-          RANDOM_ERROR_CODES.INVALID_SEED_SEQUENCE,
+          RandomErrorCode.INVALID_SEED_SEQUENCE,
           'The seed sequence did not generate enough values.',
           { index: j + 3 }
         );
@@ -405,7 +405,7 @@ export abstract class LinearCongruentialEngine<T extends UInt>
         UInt32Type.cast(word as bigint);
       } catch (error) {
         throw new RandomError(
-          RANDOM_ERROR_CODES.INVALID_SEED_SEQUENCE,
+          RandomErrorCode.INVALID_SEED_SEQUENCE,
           'The seed sequence generated a value outside the uint32 range.',
           {
             index: j + 3,
@@ -446,7 +446,7 @@ export abstract class LinearCongruentialEngine<T extends UInt>
         increment < 0n || increment > maximum ||
         modulus < 0n || modulus > maximum) {
       throw new RandomError(
-        RANDOM_ERROR_CODES.OUT_OF_RANGE,
+        RandomErrorCode.OUT_OF_RANGE,
         'The engine parameters are outside the result type range.',
         {
           multiplier,
@@ -458,7 +458,7 @@ export abstract class LinearCongruentialEngine<T extends UInt>
 
     if (modulus !== 0n && (multiplier >= modulus || increment >= modulus)) {
       throw new RandomError(
-        RANDOM_ERROR_CODES.INVALID_ARGUMENT,
+        RandomErrorCode.INVALID_ARGUMENT,
         'The multiplier and increment must be less than the modulus.',
         {
           multiplier,
