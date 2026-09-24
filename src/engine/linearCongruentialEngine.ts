@@ -6,7 +6,6 @@ export interface LinearCongruentialEngineDefinition<T extends UInt> {
   multiplier: T;
   increment: T;
   modulus: T;
-  defaultSeed: T;
 }
 
 export interface LinearCongruentialEngineConstructor<T extends UInt> {
@@ -477,7 +476,7 @@ export function defineLinearCongruentialEngine<T extends UInt>(
     public static readonly multiplier = definition.multiplier;
     public static readonly increment = definition.increment;
     public static readonly modulus = definition.modulus;
-    public static readonly defaultSeed = definition.defaultSeed;
+    public static readonly defaultSeed = 1n as T;
 
     public static override min(): T {
       return (this.increment === 0n ? 1n : 0n) as T;
