@@ -163,9 +163,7 @@ export abstract class LinearCongruentialEngine<T extends UInt>
 
   public constructor(value?: T | SeedSequence | LinearCongruentialEngine<T>) {
     const type = this.constructor as LinearCongruentialEngineConstructor<T>;
-
     this.actualModulus = this.getActualModulus(type);
-    this.validateParameters(type);
   
     if (value instanceof LinearCongruentialEngine) {
       if (value.constructor !== this.constructor) {
@@ -301,9 +299,7 @@ export abstract class LinearCongruentialEngine<T extends UInt>
       throw new RandomError(
         RandomErrorCode.OUT_OF_RANGE,
         'The discard count is outside the unsigned long long range.',
-        {
-          z,
-        },
+        { z }
       );
     }
 
@@ -351,10 +347,7 @@ export abstract class LinearCongruentialEngine<T extends UInt>
       throw new RandomError(
         RandomErrorCode.OUT_OF_RANGE,
         'The seed is outside the result type range.',
-        {
-          value,
-          cause: error,
-        },
+        { value, cause: error }
       );
     }
 
@@ -382,9 +375,7 @@ export abstract class LinearCongruentialEngine<T extends UInt>
       throw new RandomError(
         RandomErrorCode.INVALID_SEED_SEQUENCE,
         'The seed sequence failed to generate values.',
-        {
-          cause: error,
-        },
+        { cause: error }
       );
     }
 
@@ -407,11 +398,7 @@ export abstract class LinearCongruentialEngine<T extends UInt>
         throw new RandomError(
           RandomErrorCode.INVALID_SEED_SEQUENCE,
           'The seed sequence generated a value outside the uint32 range.',
-          {
-            index: j + 3,
-            value: word,
-            cause: error,
-          },
+          { index: j + 3, value: word, cause: error }
         );
       }
 
@@ -436,37 +423,35 @@ export abstract class LinearCongruentialEngine<T extends UInt>
     return type.resultType.modulus;
   }
 
-  private validateParameters(type: LinearCongruentialEngineConstructor<T>): void {
-    const maximum = type.resultType.max as bigint;
-    const multiplier = type.multiplier as bigint;
-    const increment = type.increment as bigint;
-    const modulus = type.modulus as bigint;
+}
 
-    if (multiplier < 0n || multiplier > maximum ||
-        increment < 0n || increment > maximum ||
-        modulus < 0n || modulus > maximum) {
-      throw new RandomError(
-        RandomErrorCode.OUT_OF_RANGE,
-        'The engine parameters are outside the result type range.',
-        {
-          multiplier,
-          increment,
-          modulus,
-        },
-      );
-    }
 
-    if (modulus !== 0n && (multiplier >= modulus || increment >= modulus)) {
-      throw new RandomError(
-        RandomErrorCode.INVALID_ARGUMENT,
-        'The multiplier and increment must be less than the modulus.',
-        {
-          multiplier,
-          increment,
-          modulus,
-        },
-      );
-    }
+function validateLinearCongruentialEngineDefinition<T extends UInt>(
+  resultType: UIntType<T>,
+  definition: LinearCongruentialEngineDefinition<T>,
+): void {
+  const maximum = resultType.max as bigint;
+  const multiplier = definition.multiplier as bigint;
+  const increment = definition.increment as bigint;
+  const modulus = definition.modulus as bigint;
+
+  if (multiplier < 0n || multiplier > maximum ||
+      increment < 0n || increment > maximum ||
+      modulus < 0n || modulus > maximum) {
+    throw new RandomError(
+      RandomErrorCode.OUT_OF_RANGE,
+      'The engine parameters are outside the result type range.',
+      { multiplier, increment, modulus }
+    );
+  }
+
+  if (modulus !== 0n &&
+      (multiplier >= modulus || increment >= modulus)) {
+    throw new RandomError(
+      RandomErrorCode.INVALID_ARGUMENT,
+      'The multiplier and increment must be less than the modulus.',
+      { multiplier, increment, modulus }
+    );
   }
 }
 
@@ -485,6 +470,8 @@ export function defineLinearCongruentialEngine<T extends UInt>(
   resultType: UIntType<T>,
   definition: LinearCongruentialEngineDefinition<T>,
 ): LinearCongruentialEngineConstructor<T> {
+  validateLinearCongruentialEngineDefinition(resultType, definition);
+
   class Engine extends LinearCongruentialEngine<T> {
     public static readonly resultType = resultType;
     public static readonly multiplier = definition.multiplier;
