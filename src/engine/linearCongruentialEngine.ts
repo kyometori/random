@@ -1,6 +1,5 @@
-import type { SeedSequence, UniformRandomBitGenerator } from '../random/interfaces';
-import type { SeedResult, UInt, UInt32, UnsignedLongLong, UIntType } from '../random';
-import { UINT64_MAX, UInt32Type, RandomErrorCode, RandomError } from '../random';
+import type { SeedSequence, UniformRandomBitGenerator, SeedResult, UInt, UInt32, UnsignedLongLong, UIntType } from '../typings';
+import { UINT64_MAX, UInt32Type, RandomErrorCode, RandomError } from '../typings';
 
 export interface LinearCongruentialEngineDefinition<T extends UInt> {
   multiplier: T;

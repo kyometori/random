@@ -1,6 +1,5 @@
-import type { SeedSequence, UniformRandomBitGenerator } from '../random/interfaces';
-import type { SeedResult, UInt, UIntType, UnsignedLongLong, Size } from '../random';
-import { UINT64_MAX, UInt32Type, RandomErrorCode, RandomError } from '../random';
+import type { SeedSequence, UniformRandomBitGenerator, SeedResult, UInt, UIntType, UnsignedLongLong, Size } from '../typings';
+import { UINT64_MAX, UInt32Type, RandomErrorCode, RandomError } from '../typings';
 
 export interface MersenneTwisterEngineDefinition<T extends UInt> {
   wordSize: Size;

@@ -1,6 +1,6 @@
 import { defineLinearCongruentialEngine, defineMersenneTwisterEngine } from './engine';
-import type { UInt32, UInt64 } from './random';
-import { UInt32Type, UInt64Type } from './random';
+import type { UInt32, UInt64 } from './typings';
+import { UInt32Type, UInt64Type } from './typings';
 
 /**
  * `MinstdRand0` is a predefined `LinearCongruentialEngine` specialization
