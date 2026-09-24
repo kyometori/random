@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
-import { MinstdRand0, MinstdRand, Mt19937, Mt19937_64 } from '../dist/index.mjs';
+import { MinstdRand0, MinstdRand, Mt19937, Mt19937_64 } from '../../dist/index.mjs';
 
 test('generator: predefined parameters', () => {
   assert.equal(MinstdRand0.multiplier, 16807n);
