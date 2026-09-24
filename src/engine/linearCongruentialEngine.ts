@@ -297,9 +297,7 @@ export abstract class LinearCongruentialEngine<T extends UInt>
       throw new RandomError(
         RANDOM_ERROR_CODES.OUT_OF_RANGE,
         'The discard count is outside the unsigned long long range.',
-        {
-          z,
-        },
+        { z },
       );
     }
 
