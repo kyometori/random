@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { defineLinearCongruentialEngine, RandomErrorCode, UInt32Type, UInt64Type } from '../../dist/index.mjs';
+import { defineLinearCongruentialEngine, SeedSeq, RandomErrorCode, UInt32Type, UInt64Type } from '../../dist/index.mjs';
 
 const TestEngine = defineLinearCongruentialEngine(UInt32Type, {
   multiplier: 5n,
@@ -32,6 +32,8 @@ const SeedSequence64Engine = defineLinearCongruentialEngine(UInt64Type, {
   modulus: 0n,
 });
 
+const seedSequence = new SeedSeq([1n, 2n, 3n, 4n, 5n]);
+
 test('engine: generates the successor state', () => {
   const engine = new TestEngine(2n);
 
@@ -60,42 +62,15 @@ test('engine: uses result type modulus when modulus is zero', () => {
 });
 
 test('engine: initializes from a seed sequence', () => {
-  const seq = {
-    generate(destination) {
-      destination[3] = 0x89abcdefn;
-    },
-    size() {
-      return 1;
-    },
-    param() {
-      return [];
-    },
-  };
+  const engine = new SeedSequenceEngine(seedSequence);
 
-  const engine = new SeedSequenceEngine(seq);
-
-  assert.equal(engine.next(), 0x89abcdefn);
+  assert.equal(engine.next(), 2938657729n);
 });
 
 test('engine: combines 64-bit seed sequence values', () => {
-  const seq = {
-    generate(destination) {
-      assert.equal(destination.length, 6);
+  const engine = new SeedSequence64Engine(seedSequence);
 
-      destination[3] = 0x89abcdefn;
-      destination[4] = 0x01234567n;
-    },
-    size() {
-      return 2;
-    },
-    param() {
-      return [];
-    },
-  };
-
-  const engine = new SeedSequence64Engine(seq);
-
-  assert.equal(engine.next(), 0x0123456789abcdefn);
+  assert.equal(engine.next(), 12645680667191726194n);
 });
 
 test('engine: rejects a seed outside the result type range', () => {
