@@ -2,14 +2,12 @@ import type { SeedResult, SeedSequence, Size, UInt32, UIntType } from '../typing
 import { UINT32_MAX, UInt32Type } from '../typings';
 
 /**
- * `SeedSeq` is a seed sequence that consumes integer-valued seed data and
- * produces a requested number of 32-bit unsigned integer values.
  *
- * The generated values are distributed over the entire 32-bit range even
- * when the supplied seed data is close or poorly distributed.
+ * `SeedSeq` consumes a sequence of integer-valued data and produces a requested 
+ * number of 32-bit unsigned integer values, based on the consumed data. 
  *
- * `SeedSeq` models the standard C++ `std::seed_seq` facility and satisfies
- * the `SeedSequence` interface used by this library.
+ * The produced values are distributed over the entire 32-bit range even if the consumed values are close.
+ *
  *
  * ### Member types
  *
