@@ -28,11 +28,7 @@ function checkOracle() {
   try {
     accessSync(ORACLE, constants.X_OK);
   } catch {
-    throw new Error([
-      `C++ oracle not found: ${ORACLE}`,
-      'Build it with:',
-      `  g++ -std=c++20 -O2 test/seed/oracle.cpp -o ${ORACLE}`,
-    ].join('\n'));
+    throw new Error(`C++ oracle not found: ${ORACLE}\nBuild it with: make`);
   }
 }
 
