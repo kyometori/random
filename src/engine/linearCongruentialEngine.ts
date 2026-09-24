@@ -1,20 +1,12 @@
 import type { SeedSequence, UniformRandomBitGenerator } from '../random/interfaces';
-import type { SeedResult, UInt, UInt32, UnsignedLongLong } from '../random/types';
-import { UINT32_MAX, UINT64_MAX } from '../random/types';
-import { RANDOM_ERROR_CODES, RandomError } from '../random/error';
-
-type ResultBits = 32 | 64;
-const resultBits64 = new WeakSet<Function>();
-const getResultBits = (type: Function): ResultBits => (
-  resultBits64.has(type) ? 64 : 32
-);
+import type { SeedResult, UInt, UInt32, UnsignedLongLong, UIntType } from '../random';
+import { UINT64_MAX, UInt32Type, RANDOM_ERROR_CODES, RandomError } from '../random';
 
 export interface LinearCongruentialEngineDefinition<T extends UInt> {
   multiplier: T;
   increment: T;
   modulus: T;
   defaultSeed: T;
-  resultBits: ResultBits;
 }
 
 export interface LinearCongruentialEngineConstructor<T extends UInt> {
@@ -23,6 +15,7 @@ export interface LinearCongruentialEngineConstructor<T extends UInt> {
   new(seq: SeedSequence): LinearCongruentialEngine<T>;
   new(other: LinearCongruentialEngine<T>): LinearCongruentialEngine<T>;
 
+  readonly resultType: UIntType<T>;
   readonly multiplier: T;
   readonly increment: T;
   readonly modulus: T;
@@ -169,7 +162,7 @@ export abstract class LinearCongruentialEngine<T extends UInt>
   public constructor(other: LinearCongruentialEngine<T>);
 
   public constructor(value?: T | SeedSequence | LinearCongruentialEngine<T>) {
-    const type = this.constructor as LinearCongruentialEngineConstructor<T> & typeof LinearCongruentialEngine;
+    const type = this.constructor as LinearCongruentialEngineConstructor<T>;
 
     this.actualModulus = this.getActualModulus(type);
     this.validateParameters(type);
@@ -223,7 +216,18 @@ export abstract class LinearCongruentialEngine<T extends UInt>
    */
   public static max(): UInt {
     if (this.modulus === 0n) {
-      return (getResultBits(this) === 32 ? UINT32_MAX : UINT64_MAX) as UInt;
+      const type = this as typeof LinearCongruentialEngine & {
+        resultType?: UIntType<UInt>;
+      };
+
+      if (type.resultType === undefined) {
+        throw new RandomError(
+          RANDOM_ERROR_CODES.INVALID_STATE,
+          'The result type is not available on the base engine.',
+        );
+      }
+
+      return type.resultType.max;
     }
 
     return (this.modulus - 1n) as UInt;
@@ -255,7 +259,7 @@ export abstract class LinearCongruentialEngine<T extends UInt>
   public seed(seq: SeedSequence): void;
 
   public seed(valueOrSequence?: T | SeedSequence): void {
-    const type = this.constructor as LinearCongruentialEngineConstructor<T> & typeof LinearCongruentialEngine;
+    const type = this.constructor as LinearCongruentialEngineConstructor<T>;
 
     if (valueOrSequence === undefined) {
       this.state = this.seedValue(type.defaultSeed);
@@ -277,7 +281,7 @@ export abstract class LinearCongruentialEngine<T extends UInt>
    * @returns A pseudo-random value in the range `[min(), max()]`.
    */
   public next(): T {
-    const type = this.constructor as LinearCongruentialEngineConstructor<T> & typeof LinearCongruentialEngine;
+    const type = this.constructor as LinearCongruentialEngineConstructor<T>;
 
     this.state = (
       (type.multiplier as bigint) * this.state +
@@ -297,11 +301,13 @@ export abstract class LinearCongruentialEngine<T extends UInt>
       throw new RandomError(
         RANDOM_ERROR_CODES.OUT_OF_RANGE,
         'The discard count is outside the unsigned long long range.',
-        { z },
+        {
+          z,
+        },
       );
     }
 
-    const type = this.constructor as LinearCongruentialEngineConstructor<T> & typeof LinearCongruentialEngine;
+    const type = this.constructor as LinearCongruentialEngineConstructor<T>;
     const modulus = this.actualModulus;
 
     let remaining = z;
@@ -335,29 +341,52 @@ export abstract class LinearCongruentialEngine<T extends UInt>
   }
 
   private seedValue(value: T): T {
-    const type = this.constructor as LinearCongruentialEngineConstructor<T> & typeof LinearCongruentialEngine;
+    const type = this.constructor as LinearCongruentialEngineConstructor<T>;
     const modulus = this.actualModulus
-    const state = (value as bigint) % modulus;
+    let state: bigint;
+
+    try {
+      state = (type.resultType.cast(value as bigint)) % modulus;
+    } catch (error) {
+      throw new RandomError(
+        RANDOM_ERROR_CODES.OUT_OF_RANGE,
+        'The seed is outside the result type range.',
+        {
+          value,
+          cause: error,
+        },
+      );
+    }
 
     if (
       (type.increment as bigint) % modulus === 0n &&
       state === 0n
     ) {
-      return 1n as T;
+      return type.resultType.cast(1n);
     }
 
     return state as T;
   }
 
   private seedSequence(seq: SeedSequence): void {
-    const type = this.constructor as LinearCongruentialEngineConstructor<T> & typeof LinearCongruentialEngine;
+    const type = this.constructor as LinearCongruentialEngineConstructor<T>;
     const modulus = this.actualModulus
 
     const bitLength = (value: bigint): number => value.toString(2).length;
-    const k = Math.ceil(bitLength(modulus) / 32);
+    const k = Math.floor((bitLength(modulus) - 1) / 32) + 1;
     const data = Array<SeedResult>(k + 3).fill(0n as UInt32);
 
-    seq.generate(data);
+    try {
+      seq.generate(data);
+    } catch (error) {
+      throw new RandomError(
+        RANDOM_ERROR_CODES.INVALID_SEED_SEQUENCE,
+        'The seed sequence failed to generate values.',
+        {
+          cause: error,
+        },
+      );
+    }
 
     let state = 0n;
 
@@ -372,14 +401,28 @@ export abstract class LinearCongruentialEngine<T extends UInt>
         );
       }
 
-      state = (state + (word << BigInt(32 * j))) % modulus;
+      try {
+        UInt32Type.cast(word as bigint);
+      } catch (error) {
+        throw new RandomError(
+          RANDOM_ERROR_CODES.INVALID_SEED_SEQUENCE,
+          'The seed sequence generated a value outside the uint32 range.',
+          {
+            index: j + 3,
+            value: word,
+            cause: error,
+          },
+        );
+      }
+
+      state = (state + ((word as bigint) << BigInt(32 * j))) % modulus;
     }
 
     if (
       (type.increment as bigint) % modulus === 0n &&
       state === 0n
     ) {
-      this.state = 1n as T;
+      this.state = type.resultType.cast(1n);
     } else {
       this.state = state as T;
     }
@@ -390,13 +433,11 @@ export abstract class LinearCongruentialEngine<T extends UInt>
       return type.modulus as bigint;
     }
 
-    return getResultBits(type) === 32 ? UINT32_MAX + 1n : UINT64_MAX + 1n;
+    return type.resultType.modulus;
   }
 
-
-
-  private validateParameters(type: LinearCongruentialEngineConstructor<T> & typeof LinearCongruentialEngine): void {
-    const maximum = getResultBits(type) === 32 ? UINT32_MAX : UINT64_MAX;
+  private validateParameters(type: LinearCongruentialEngineConstructor<T>): void {
+    const maximum = type.resultType.max as bigint;
     const multiplier = type.multiplier as bigint;
     const increment = type.increment as bigint;
     const modulus = type.modulus as bigint;
@@ -441,9 +482,11 @@ export abstract class LinearCongruentialEngine<T extends UInt>
  * @returns A `LinearCongruentialEngine` constructor.
  */
 export function defineLinearCongruentialEngine<T extends UInt>(
+  resultType: UIntType<T>,
   definition: LinearCongruentialEngineDefinition<T>,
 ): LinearCongruentialEngineConstructor<T> {
   class Engine extends LinearCongruentialEngine<T> {
+    public static readonly resultType = resultType;
     public static readonly multiplier = definition.multiplier;
     public static readonly increment = definition.increment;
     public static readonly modulus = definition.modulus;
@@ -455,16 +498,12 @@ export function defineLinearCongruentialEngine<T extends UInt>(
 
     public static override max(): T {
       if (this.modulus === 0n) {
-        return (definition.resultBits === 32 ? UINT32_MAX : UINT64_MAX) as T;
+        return this.resultType.max;
       }
 
       return (this.modulus - 1n) as T;
     }
   };
-
-  if (definition.resultBits === 64) {
-    resultBits64.add(Engine);
-  }
 
   return Engine;
 }

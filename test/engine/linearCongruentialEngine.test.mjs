@@ -1,45 +1,40 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { defineLinearCongruentialEngine } from '../../dist/index.mjs';
+import { defineLinearCongruentialEngine, RANDOM_ERROR_CODES, UInt32Type, UInt64Type } from '../../dist/index.mjs';
 
-const TestEngine = defineLinearCongruentialEngine({
+const TestEngine = defineLinearCongruentialEngine(UInt32Type, {
   multiplier: 5n,
   increment: 1n,
   modulus: 31n,
   defaultSeed: 1n,
-  resultBits: 32,
 });
 
-const ModulusZeroEngine = defineLinearCongruentialEngine({
+const ModulusZeroEngine = defineLinearCongruentialEngine(UInt32Type, {
   multiplier: 5n,
   increment: 1n,
   modulus: 0n,
-  defaultSeed: 1n,
-  resultBits: 32
+  defaultSeed: 1n
 });
 
-const ZeroIncrementEngine = defineLinearCongruentialEngine({
+const ZeroIncrementEngine = defineLinearCongruentialEngine(UInt32Type, {
   multiplier: 5n,
   increment: 0n,
   modulus: 31n,
-  defaultSeed: 1n,
-  resultBits: 32
+  defaultSeed: 1n
 });
 
-const SeedSequenceEngine = defineLinearCongruentialEngine({
+const SeedSequenceEngine = defineLinearCongruentialEngine(UInt32Type, {
   multiplier: 1n,
   increment: 0n,
   modulus: 0xffffffffn,
-  defaultSeed: 1n,
-  resultBits: 32
+  defaultSeed: 1n
 });
 
-const SeedSequence64Engine = defineLinearCongruentialEngine({
+const SeedSequence64Engine = defineLinearCongruentialEngine(UInt64Type, {
   multiplier: 1n,
   increment: 0n,
   modulus: 0n,
-  defaultSeed: 1n,
-  resultBits: 64
+  defaultSeed: 1n
 });
 
 test('engine: generates the successor state', () => {
@@ -90,6 +85,8 @@ test('engine: initializes from a seed sequence', () => {
 test('engine: combines 64-bit seed sequence values', () => {
   const seq = {
     generate(destination) {
+      assert.equal(destination.length, 6);
+
       destination[3] = 0x89abcdefn;
       destination[4] = 0x01234567n;
     },
@@ -104,6 +101,57 @@ test('engine: combines 64-bit seed sequence values', () => {
   const engine = new SeedSequence64Engine(seq);
 
   assert.equal(engine.next(), 0x0123456789abcdefn);
+});
+
+test('engine: rejects a seed outside the result type range', () => {
+  assert.throws(
+    () => new TestEngine(0x1_0000_0000n),
+    (error) => (
+      error?.code === RANDOM_ERROR_CODES.OUT_OF_RANGE
+    ),
+  );
+});
+
+test('engine: rejects an invalid seed sequence value', () => {
+  const seq = {
+    generate(destination) {
+      destination[3] = -1n;
+    },
+    size() {
+      return 1;
+    },
+    param() {
+      return [];
+    },
+  };
+
+  assert.throws(
+    () => new SeedSequenceEngine(seq),
+    (error) => (
+      error?.code === RANDOM_ERROR_CODES.INVALID_SEED_SEQUENCE
+    ),
+  );
+});
+
+test('engine: rejects an incomplete seed sequence', () => {
+  const seq = {
+    generate(destination) {
+      destination[3] = undefined;
+    },
+    size() {
+      return 1;
+    },
+    param() {
+      return [];
+    },
+  };
+
+  assert.throws(
+    () => new SeedSequenceEngine(seq),
+    (error) => (
+      error?.code === RANDOM_ERROR_CODES.INVALID_SEED_SEQUENCE
+    ),
+  );
 });
 
 test('engine: discard matches repeated generation', () => {

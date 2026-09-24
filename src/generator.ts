@@ -1,5 +1,6 @@
 import { defineLinearCongruentialEngine } from './engine/linearCongruentialEngine';
-import type { UInt32 } from './random/types';
+import type { UInt32 } from './random';
+import { UInt32Type } from './random';
 
 /**
  * `minstd_rand0` is a predefined `LinearCongruentialEngine` specialization
@@ -15,12 +16,11 @@ import type { UInt32 } from './random/types';
  *
  * @see https://en.cppreference.com/cpp/numeric/random/linear_congruential_engine
  */
-export const MinstdRand0 = defineLinearCongruentialEngine<UInt32>({
+export const MinstdRand0 = defineLinearCongruentialEngine<UInt32>(UInt32Type, {
   multiplier: 16807n as UInt32,
   increment: 0n as UInt32,
   modulus: 2147483647n as UInt32,
   defaultSeed: 1n as UInt32,
-  resultBits: 32
 });
 
 /**
@@ -37,10 +37,9 @@ export const MinstdRand0 = defineLinearCongruentialEngine<UInt32>({
  *
  * @see https://en.cppreference.com/cpp/numeric/random/linear_congruential_engine
  */
-export const MinstdRand = defineLinearCongruentialEngine<UInt32>({
+export const MinstdRand = defineLinearCongruentialEngine<UInt32>(UInt32Type, {
   multiplier: 48271n as UInt32,
   increment: 0n as UInt32,
   modulus: 2147483647n as UInt32,
   defaultSeed: 1n as UInt32,
-  resultBits: 32
 });
