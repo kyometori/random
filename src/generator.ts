@@ -1,4 +1,4 @@
-import { defineLinearCongruentialEngine, defineMersenneTwisterEngine } from './engine';
+import { defineLinearCongruentialEngine, defineMersenneTwisterEngine } from './engines';
 import type { UInt32, UInt64 } from './typings';
 import { UInt32Type, UInt64Type } from './typings';
 
