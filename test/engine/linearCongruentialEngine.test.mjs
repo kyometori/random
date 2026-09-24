@@ -6,35 +6,30 @@ const TestEngine = defineLinearCongruentialEngine(UInt32Type, {
   multiplier: 5n,
   increment: 1n,
   modulus: 31n,
-  defaultSeed: 1n,
 });
 
 const ModulusZeroEngine = defineLinearCongruentialEngine(UInt32Type, {
   multiplier: 5n,
   increment: 1n,
   modulus: 0n,
-  defaultSeed: 1n
 });
 
 const ZeroIncrementEngine = defineLinearCongruentialEngine(UInt32Type, {
   multiplier: 5n,
   increment: 0n,
   modulus: 31n,
-  defaultSeed: 1n
 });
 
 const SeedSequenceEngine = defineLinearCongruentialEngine(UInt32Type, {
   multiplier: 1n,
   increment: 0n,
   modulus: 0xffffffffn,
-  defaultSeed: 1n
 });
 
 const SeedSequence64Engine = defineLinearCongruentialEngine(UInt64Type, {
   multiplier: 1n,
   increment: 0n,
   modulus: 0n,
-  defaultSeed: 1n
 });
 
 test('engine: generates the successor state', () => {
