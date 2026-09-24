@@ -456,7 +456,7 @@ export abstract class MersenneTwisterEngine<T extends UInt>
   private seedSequence(seq: SeedSequence): void {
     const { wordSize, stateSize } = this.constructor as MersenneTwisterEngineConstructor<T>;
     const k = Math.ceil(wordSize / 32);
-    const data = new Array<SeedResult>(stateSize * k,).fill(0n as SeedResult);
+    const data = new Array<SeedResult>(stateSize * k)
 
     seq.generate(data);
 
