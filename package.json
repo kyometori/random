@@ -23,8 +23,9 @@
   ],
   "scripts": {
     "build": "tsdown",
-    "test": "node test",
-    "type-check": "tsc --noEmit"
+    "test": "node --test test",
+    "type-check": "tsc --noEmit",
+    "typedoc": "typedoc"
   },
   "repository": {
     "type": "git",
@@ -40,6 +41,10 @@
   "devDependencies": {
     "@types/node": "^26.6.2",
     "tsdown": "^0.23.0",
+    "typedoc": "^0.28.20",
     "typescript": "^6.0.3"
+  },
+  "allowScripts": {
+    "esbuild@0.28.2": true
   }
 }
