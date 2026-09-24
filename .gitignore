@@ -4,7 +4,7 @@ dist
 
 test.js
 test.mjs
-test/cpp/oracle
+test/**/oracle
 
 *.swp
 docs
