@@ -542,7 +542,7 @@ function validateMersenneTwisterEngineDefinition<T extends UInt>(
   const resultTypeBits = (resultType.modulus - 1n).toString(2).length;
   const integer = (value: number): boolean => Number.isSafeInteger(value);
 
-  if (!integer(wordSize) || wordSize < 3 || wordSize > resultTypeBits) {
+  if (!integer(wordSize) || wordSize > resultTypeBits) {
     throw new RandomError(
       RandomErrorCode.INVALID_ARGUMENT,
       'The word size is invalid.',
