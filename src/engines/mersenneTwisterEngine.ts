@@ -674,5 +674,5 @@ export function defineMersenneTwisterEngine<
     }
   }
 
-  return Engine as unknown as MersenneTwisterEngineConstructor<Type, Traits>;
+  return Object.freeze(Engine) as unknown as MersenneTwisterEngineConstructor<Type, Traits>;
 }

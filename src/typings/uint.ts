@@ -5,7 +5,7 @@ export const UINT64_MAX = 0xffff_ffff_ffff_ffffn;
 export const UINT32_MODULUS = UINT32_MAX + 1n;
 export const UINT64_MODULUS = UINT64_MAX + 1n;
 
-export const UInt32Type: UIntType<UInt32> = {
+export const UInt32Type: UIntType<UInt32> = Object.freeze({
   max: UINT32_MAX as UInt32,
   modulus: UINT32_MODULUS,
   cast<const Value extends bigint>(value: Value): UInt32<Value> {
@@ -15,9 +15,9 @@ export const UInt32Type: UIntType<UInt32> = {
 
     return value as UInt32<Value>;
   },
-};
+});
 
-export const UInt64Type: UIntType<UInt64> = {
+export const UInt64Type: UIntType<UInt64> = Object.freeze({
   max: UINT64_MAX as UInt64,
   modulus: UINT64_MODULUS,
   cast<const Value extends bigint>(value: Value): UInt64<Value> {
@@ -27,7 +27,7 @@ export const UInt64Type: UIntType<UInt64> = {
 
     return value as UInt64<Value>;
   },
-};
+});
 
 /**
  * Converts a bigint to `UInt32` while preserving its bigint literal type.

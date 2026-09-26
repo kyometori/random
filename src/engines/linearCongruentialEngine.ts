@@ -514,5 +514,5 @@ export function defineLinearCongruentialEngine<
     }
   }
 
-  return Engine as unknown as LinearCongruentialEngineConstructor<Type, Traits>;
+  return Object.freeze(Engine) as unknown as LinearCongruentialEngineConstructor<Type, Traits>;
 }
