@@ -205,3 +205,17 @@ export type ValidatedRandomNumberEngine<Engine extends RandomEngine, Type extend
   { readonly [uniformRandomBitGeneratorStatus]: true } &
   RandomNumberEngineRequirements<Engine, Type>;
 
+/**
+ * Extracts the type-level range traits of a random engine.
+ *
+ * An engine without statically known traits produces broad `bigint`
+ * bounds, representing unknown range information.
+ *
+ * @typeParam Engine The engine being examined.
+ */
+export type RandomEngineTraitsOf<Engine extends RandomEngine> =
+  Engine extends {
+    readonly [randomEngineTraits]: infer Traits extends RandomEngineTraits;
+  }
+    ? RandomEngineTraits<Traits['minimum'], Traits['maximum']>
+    : RandomEngineTraits;
