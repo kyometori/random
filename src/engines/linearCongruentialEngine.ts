@@ -1,6 +1,6 @@
 import type { SeedSequence, SeedResult, RandomEngine, UInt, UInt32, UnsignedLongLong, UIntType, UIntWithLiteralValue, UIntLiteral, UIntMax } from '../typings';
 import { UINT64_MAX, UInt32Type, RandomErrorCode, RandomError } from '../typings';
-import type { RandomEngineConstructor, RandomEngineTraits, TypedRandomEngine, SubtractBigInt } from '../concepts';
+import type { RandomEngineTraits, TypedRandomEngine, SubtractBigInt } from '../concepts';
 
 export interface LinearCongruentialEngineDefinition<T extends UInt> {
   multiplier: T;
@@ -33,7 +33,7 @@ export type LinearCongruentialEngineTraits<Type extends UInt, Definition extends
  * @typeParam Traits Type-level range information derived from the
  * specialization parameters.
  */
-export interface LinearCongruentialEngineConstructor<Type extends UInt, Traits extends RandomEngineTraits = RandomEngineTraits> extends RandomEngineConstructor<Type> {
+export interface LinearCongruentialEngineConstructor<Type extends UInt, Traits extends RandomEngineTraits = RandomEngineTraits> {
   new(): LinearCongruentialEngine<Type> & TypedRandomEngine<Type, Traits>;
   new(value: Type): LinearCongruentialEngine<Type> & TypedRandomEngine<Type, Traits>;
   new(sequence: SeedSequence): LinearCongruentialEngine<Type> & TypedRandomEngine<Type, Traits>;

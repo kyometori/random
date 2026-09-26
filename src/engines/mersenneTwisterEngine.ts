@@ -1,4 +1,4 @@
-import type { NumberToBigInt, PowerBigInt, RandomEngineConstructor, RandomEngineTraits, SubtractBigInt, TypedRandomEngine } from '../concepts';
+import type { NumberToBigInt, PowerBigInt, RandomEngineTraits, SubtractBigInt, TypedRandomEngine } from '../concepts';
 import type { SeedSequence, RandomEngine, SeedResult, UInt, UIntType, UnsignedLongLong, Size, UIntWithLiteralValue } from '../typings';
 import { UINT64_MAX, UInt32Type, RandomErrorCode, RandomError } from '../typings';
 
@@ -41,10 +41,7 @@ export type MersenneTwisterEngineTraits<
  * @typeParam Traits Type-level range information derived from the
  * specialization parameters.
  */
-export interface MersenneTwisterEngineConstructor<
-  Type extends UInt,
-  Traits extends RandomEngineTraits = RandomEngineTraits,
-> extends RandomEngineConstructor<Type> {
+export interface MersenneTwisterEngineConstructor<Type extends UInt, Traits extends RandomEngineTraits = RandomEngineTraits> {
   new(): MersenneTwisterEngine<Type> & TypedRandomEngine<Type, Traits>;
   new(value: Type): MersenneTwisterEngine<Type> & TypedRandomEngine<Type, Traits>;
   new(sequence: SeedSequence): MersenneTwisterEngine<Type> & TypedRandomEngine<Type, Traits>;

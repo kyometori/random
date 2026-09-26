@@ -25,6 +25,7 @@
     "build": "tsdown",
     "test": "node --test test",
     "type-check": "tsc --noEmit",
+    "type-test": "tsc -p tsconfig.type-test.json",
     "typedoc": "typedoc --plugin typedoc-github-theme"
   },
   "repository": {
