@@ -52,50 +52,32 @@ type PreviousDecimalDigit<Value extends DecimalDigit> =
   never;
 
 type ReverseString<Value extends string, Result extends string = ''> =
-  Value extends `${infer Head}${infer Rest}`
-    ? ReverseString<Rest, `${Head}${Result}`>
-    : Result;
+  Value extends `${infer Head}${infer Rest}` ? ReverseString<Rest, `${Head}${Result}`> : Result;
 
 type StripLeadingZeros<Value extends string> =
-  Value extends `0${infer Rest}`
-    ? Rest extends '' ? '0' : StripLeadingZeros<Rest>
-    : Value;
+  Value extends `0${infer Rest}` ? (Rest extends '' ? '0' : StripLeadingZeros<Rest>) : Value;
 
-type NormalizeDecimal<Value extends string> =
-  StripLeadingZeros<Value>;
+type NormalizeDecimal<Value extends string> = StripLeadingZeros<Value>;
 
 type BuildTuple<Length extends number, Result extends unknown[] = []> =
-  Result['length'] extends Length
-    ? Result
-    : BuildTuple<Length, [...Result, unknown]>;
+  Result['length'] extends Length ? Result : BuildTuple<Length, [...Result, unknown]>;
 
 type SmallLessThan<Left extends number, Right extends number, Index extends unknown[] = []> =
-  Left extends Right
-    ? false
-    : Index['length'] extends Left
-      ? true
-      : Index['length'] extends Right
-        ? false
-        : SmallLessThan<Left, Right, [...Index, unknown]>;
+  Left extends Right ? false : 
+    Index['length'] extends Left ? true :
+      Index['length'] extends Right ? false : SmallLessThan<Left, Right, [...Index, unknown]>;
 
-type SmallAdd<Left extends number, Right extends number> =
-  [...BuildTuple<Left>, ...BuildTuple<Right>]['length'] & number;
+type SmallAdd<Left extends number, Right extends number> = [...BuildTuple<Left>, ...BuildTuple<Right>]['length'] & number;
 
 type SmallSubtract<Left extends number, Right extends number> =
-  Left extends Right
-    ? 0
-    : SmallLessThan<Left, Right> extends true
-      ? never
-      : BuildTuple<Left> extends [...BuildTuple<Right>, ...infer Result]
-        ? Result['length'] & number
-        : never;
+  Left extends Right ? 0 :
+    SmallLessThan<Left, Right> extends true ? never :
+      BuildTuple<Left> extends [...BuildTuple<Right>, ...infer Result] ? Result['length'] & number : never;
 
 type DecimalDigitLessThan<Left extends DecimalDigit, Right extends DecimalDigit> = SmallLessThan<DecimalDigitValue<Left>, DecimalDigitValue<Right>>;
 
 type DecimalStringLength<Value extends string, Result extends unknown[] = []> =
-  Value extends `${infer _}${infer Rest}`
-    ? DecimalStringLength<Rest, [...Result, unknown]>
-    : Result['length'];
+  Value extends `${infer _}${infer Rest}` ? DecimalStringLength<Rest, [...Result, unknown]> : Result['length'];
 
 type DecimalLessThanSameLength<Left extends string, Right extends string> =
   Left extends `${infer LeftDigit}${infer LeftRest}`
@@ -115,9 +97,8 @@ type DecimalLessThanSameLength<Left extends string, Right extends string> =
     : false;
 
 type CompareNormalizedDecimal<Left extends string, Right extends string> =
-  Left extends Right
-    ? 0
-    : DecimalStringLength<Left> extends infer LeftLength extends number
+  Left extends Right ? 0 : 
+    DecimalStringLength<Left> extends infer LeftLength extends number
       ? DecimalStringLength<Right> extends infer RightLength extends number
         ? LeftLength extends RightLength
           ? DecimalLessThanSameLength<Left, Right> extends true ? -1 : 1
@@ -126,10 +107,7 @@ type CompareNormalizedDecimal<Left extends string, Right extends string> =
       : never;
 
 type CompareNonNegativeBigInt<Left extends bigint, Right extends bigint> =
-  CompareNormalizedDecimal<
-    NormalizeDecimal<`${Left}`>,
-    NormalizeDecimal<`${Right}`>
-  >;
+  CompareNormalizedDecimal<NormalizeDecimal<`${Left}`>, NormalizeDecimal<`${Right}`>>;
 
 /**
  * Compares two non-negative bigint literal types.
@@ -144,9 +122,7 @@ type CompareNonNegativeBigInt<Left extends bigint, Right extends bigint> =
  * @typeParam Right The right-hand bigint value.
  */
 export type CompareBigInt<Left extends bigint, Right extends bigint> =
-  bigint extends Left | Right
-    ? 'unknown'
-    : CompareNonNegativeBigInt<Left, Right>;
+  bigint extends Left | Right ? 'unknown' : CompareNonNegativeBigInt<Left, Right>;
 
 /**
  * Tests whether one non-negative bigint literal is smaller than another.
@@ -157,11 +133,8 @@ export type CompareBigInt<Left extends bigint, Right extends bigint> =
  * @typeParam Right The right-hand bigint value.
  */
 export type IsLessThan<Left extends bigint, Right extends bigint> =
-  CompareBigInt<Left, Right> extends 'unknown'
-    ? boolean
-    : CompareBigInt<Left, Right> extends -1
-      ? true
-      : false;
+  CompareBigInt<Left, Right> extends 'unknown' ? boolean :
+    CompareBigInt<Left, Right> extends -1 ? true : false;
 
 type AddDecimalDigits<Left extends DecimalDigit, Right extends DecimalDigit, Carry extends 0 | 1> =
   SmallAdd<SmallAdd<DecimalDigitValue<Left>, DecimalDigitValue<Right>>, Carry> extends infer Sum extends number
@@ -217,9 +190,8 @@ type AddDecimal<Left extends string, Right extends string> =
  * @typeParam Right The right-hand bigint value.
  */
 export type AddBigInt<Left extends bigint, Right extends bigint> =
-  bigint extends Left | Right
-    ? bigint
-    : AddDecimal<`${Left}`, `${Right}`> extends infer Result extends string
+  bigint extends Left | Right ? bigint :
+    AddDecimal<`${Left}`, `${Right}`> extends infer Result extends string
       ? Result extends `${infer Value extends bigint}` ? Value : never
       : never;
 
@@ -282,9 +254,8 @@ type SubtractDecimal<Left extends string, Right extends string> =
  * @typeParam Right The subtrahend.
  */
 export type SubtractBigInt<Left extends bigint, Right extends bigint> =
-  bigint extends Left | Right
-    ? bigint
-    : SubtractDecimal<`${Left}`, `${Right}`> extends infer Result extends string
+  bigint extends Left | Right ? bigint :
+    SubtractDecimal<`${Left}`, `${Right}`> extends infer Result extends string
       ? Result extends `${infer Value extends bigint}` ? Value : never
       : never;
 
@@ -451,22 +422,15 @@ type LongDivideDecimal<Dividend extends string, Divisor extends string, Remainde
  * @typeParam Divisor The divisor.
  */
 export type DivideWithRemainder<Dividend extends bigint, Divisor extends bigint> =
-  Divisor extends 0n
-    ? never
-    : bigint extends Dividend | Divisor
-      ? { quotient: bigint; remainder: bigint }
-      : LongDivideDecimal<
-          `${Dividend}`,
-          `${Divisor}`
-        > extends [
-          infer Quotient extends string,
-          infer Remainder extends string,
-        ]
-        ? {
-            quotient: Quotient extends `${infer Value extends bigint}` ? Value : never;
-            remainder: Remainder extends `${infer Value extends bigint}` ? Value : never;
-          }
-        : never;
+  Divisor extends 0n ? never : 
+    bigint extends Dividend | Divisor ? { quotient: bigint; remainder: bigint } : 
+      LongDivideDecimal<`${Dividend}`, `${Divisor}`> extends [
+        infer Quotient extends string,
+        infer Remainder extends string,
+      ] ? {
+          quotient: Quotient extends `${infer Value extends bigint}` ? Value : never;
+          remainder: Remainder extends `${infer Value extends bigint}` ? Value : never;
+      } : never;
 
 /**
  * Divides one non-negative bigint literal type by another.
@@ -512,22 +476,15 @@ export type ModuloBigInt<Dividend extends bigint, Divisor extends bigint> =
  * @typeParam Exponent The exponent.
  */
 export type PowerBigInt<Base extends bigint, Exponent extends bigint> =
-  bigint extends Base | Exponent
-    ? bigint
-    : Exponent extends 0n
-      ? 1n
-      : ModuloBigInt<Exponent, 2n> extends 0n
-        ? PowerBigInt<
-            MultiplyBigInt<Base, Base>,
-            DivideBigInt<Exponent, 2n>
-          >
-        : MultiplyBigInt<
-            Base,
-            PowerBigInt<
-              MultiplyBigInt<Base, Base>,
-              DivideBigInt<Exponent, 2n>
-            >
-          >;
+  bigint extends Base | Exponent ? bigint :
+    Exponent extends 0n ? 1n :
+      ModuloBigInt<Exponent, 2n> extends 0n ? PowerBigInt<
+        MultiplyBigInt<Base, Base>,
+        DivideBigInt<Exponent, 2n>
+      > : MultiplyBigInt<
+        Base,
+        PowerBigInt<MultiplyBigInt<Base, Base>, DivideBigInt<Exponent, 2n>>
+      >;
 
 export type NumberToBigInt<Value extends number> =
   `${Value}` extends `${infer Result extends bigint}` ? Result : bigint;

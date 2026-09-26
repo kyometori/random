@@ -41,8 +41,8 @@ export type UIntLiteral<Value extends bigint> =
  * @typeParam Value The UInt type.
  */
 export type UIntMax<Value extends UInt> =
-  Value extends UInt32<infer _> ? 0xffff_ffffn :
-  Value extends UInt64<infer _> ? 0xffff_ffff_ffff_ffffn :
+  Value extends UInt32<infer _> ? 0xffffffffn :
+  Value extends UInt64<infer _> ? 0xffffffffffffffffn :
   bigint;
 
 /**
