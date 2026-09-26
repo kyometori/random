@@ -159,10 +159,7 @@ export interface UniformRandomBitGeneratorStatic {
  *
  * @internal
  */
-type RandomNumberEngineRequirements<
-  Engine extends RandomEngine,
-  Type extends UInt = RandomEngineResultType<Engine>,
-> = {
+type RandomNumberEngineRequirements<Engine extends RandomEngine, Type extends UInt = RandomEngineResultType<Engine>> = {
   seed(): void;
   seed(value: Type): void;
   seed(sequence: SeedSequence): void;
@@ -234,13 +231,8 @@ export function assertUniformRandomBitGenerator<Engine extends RandomEngine>(eng
   const minimum = constructor.min();
   const maximum = constructor.max();
 
-  if (
-    typeof minimum !== 'bigint' ||
-    typeof maximum !== 'bigint' ||
-    minimum < 0n ||
-    maximum < 0n ||
-    minimum >= maximum
-  ) {
+  if (typeof minimum !== 'bigint' || typeof maximum !== 'bigint' ||
+      minimum < 0n || maximum < 0n || minimum >= maximum) {
     throw new RandomError(
       RandomErrorCode.INVALID_ARGUMENT,
       'The engine does not satisfy the UniformRandomBitGenerator range requirement.',
