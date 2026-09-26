@@ -19,6 +19,7 @@ BUILD_INPUTS := \
 all: type-check test
 
 test: build test/generators/oracle test/seeds/oracle
+	npm run type-test
 	npm test
 
 build: $(BUILD_STAMP)
