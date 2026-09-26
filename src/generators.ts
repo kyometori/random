@@ -1,6 +1,6 @@
 import { defineLinearCongruentialEngine, defineMersenneTwisterEngine } from './engines';
 import type { UInt32, UInt64 } from './typings';
-import { UInt32Type, UInt64Type } from './typings';
+import { uint32, UInt32Type, uint64, UInt64Type } from './typings';
 
 /**
  * `MinstdRand0` is a predefined `LinearCongruentialEngine` specialization
@@ -16,10 +16,10 @@ import { UInt32Type, UInt64Type } from './typings';
  *
  * @see https://en.cppreference.com/cpp/numeric/random/linear_congruential_engine
  */
-export const MinstdRand0 = defineLinearCongruentialEngine<UInt32>(UInt32Type, {
-  multiplier: 16807n as UInt32,
-  increment: 0n as UInt32,
-  modulus: 2147483647n as UInt32
+export const MinstdRand0 = defineLinearCongruentialEngine(UInt32Type, {
+  multiplier: uint32(16807n),
+  increment: uint32(0n),
+  modulus: uint32(2147483647n)
 });
 
 /**
@@ -36,10 +36,10 @@ export const MinstdRand0 = defineLinearCongruentialEngine<UInt32>(UInt32Type, {
  *
  * @see https://en.cppreference.com/cpp/numeric/random/linear_congruential_engine
  */
-export const MinstdRand = defineLinearCongruentialEngine<UInt32>(UInt32Type, {
-  multiplier: 48271n as UInt32,
-  increment: 0n as UInt32,
-  modulus: 2147483647n as UInt32
+export const MinstdRand = defineLinearCongruentialEngine(UInt32Type, {
+  multiplier: uint32(48271n),
+  increment: uint32(0n),
+  modulus: uint32(2147483647n)
 });
 
 /**
@@ -65,20 +65,20 @@ export const MinstdRand = defineLinearCongruentialEngine<UInt32>(UInt32Type, {
  *
  * @see https://en.cppreference.com/cpp/numeric/random/mersenne_twister_engine
  */
-export const Mt19937 = defineMersenneTwisterEngine<UInt32>(UInt32Type, {
+export const Mt19937 = defineMersenneTwisterEngine(UInt32Type, {
   wordSize: 32,
   stateSize: 624,
   shiftSize: 397,
   maskBits: 31,
-  xorMask: 0x9908b0dfn as UInt32,
+  xorMask: uint32(0x9908b0dfn),
   temperingU: 11,
-  temperingD: 0xffffffffn as UInt32,
+  temperingD: uint32(0xffffffffn),
   temperingS: 7,
-  temperingB: 0x9d2c5680n as UInt32,
+  temperingB: uint32(0x9d2c5680n),
   temperingT: 15,
-  temperingC: 0xefc60000n as UInt32,
+  temperingC: uint32(0xefc60000n),
   temperingL: 18,
-  initializationMultiplier: 1812433253n as UInt32,
+  initializationMultiplier: uint32(1812433253n)
 });
 
 /**
@@ -104,18 +104,18 @@ export const Mt19937 = defineMersenneTwisterEngine<UInt32>(UInt32Type, {
  *
  * @see https://en.cppreference.com/cpp/numeric/random/mersenne_twister_engine
  */
-export const Mt19937_64 = defineMersenneTwisterEngine<UInt64>(UInt64Type, {
+export const Mt19937_64 = defineMersenneTwisterEngine(UInt64Type, {
   wordSize: 64,
   stateSize: 312,
   shiftSize: 156,
   maskBits: 31,
-  xorMask: 0xb5026f5aa96619e9n as UInt64,
+  xorMask: uint64(0xb5026f5aa96619e9n),
   temperingU: 29,
-  temperingD: 0x5555555555555555n as UInt64,
+  temperingD: uint64(0x5555555555555555n),
   temperingS: 17,
-  temperingB: 0x71d67fffeda60000n as UInt64,
+  temperingB: uint64(0x71d67fffeda60000n),
   temperingT: 37,
-  temperingC: 0xfff7eee000000000n as UInt64,
+  temperingC: uint64(0xfff7eee000000000n),
   temperingL: 43,
-  initializationMultiplier: 6364136223846793005n as UInt64,
+  initializationMultiplier: uint64(6364136223846793005n)
 });
