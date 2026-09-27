@@ -3,6 +3,7 @@ import { defineLinearCongruentialEngine } from '../src/engines/linearCongruentia
 import { UInt32Type, uint32 } from '../src/typings';
 import type { UInt32 } from '../src/typings';
 import type { UniformRandomBitGeneratorStatusOf } from '../src/concepts';
+import { toUniformRandomBitGenerator } from '../src/concepts'
 import type { Equal, Expect } from './assert';
 
 type MinstdRand0Engine = InstanceType<typeof MinstdRand0>;
@@ -47,6 +48,12 @@ const InvalidUniformRandomBitGenerator = defineLinearCongruentialEngine(UInt32Ty
   increment: uint32(0n),
   modulus: uint32(1n),
 });
+
+declare const invalid: InvalidEngine;
+// @ts-expect-error
+assertUniformRandomBitGenerator(invalid);
+// @ts-expect-error
+toUniformRandomBitGenerator(invalid);
 
 type InvalidEngine = InstanceType<typeof InvalidUniformRandomBitGenerator>;
 
