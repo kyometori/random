@@ -1,20 +1,5 @@
 import { type RandomEngine, RandomError, RandomErrorCode } from '../typings';
-import type { KnownUniformRandomBitGenerator, RandomLibraryConstraintError, UniformRandomBitGeneratorStatic, UniformRandomBitGeneratorStatusOf, ValidatedRandomNumberEngine } from './engine';
-
-type UniformRandomBitGeneratorValidationInput<
-  Engine extends RandomEngine,
-> =
-  Engine & ([UniformRandomBitGeneratorStatusOf<NoInfer<Engine>>] extends [false]
-    ? RandomLibraryConstraintError<
-        'The engine is known not to satisfy UniformRandomBitGenerator because min() is not less than max.'
-      >
-    : unknown);
-
-type UniformRandomBitGeneratorAssertionResult<Engine extends RandomEngine> =
-  KnownUniformRandomBitGenerator<Engine> & UniformRandomBitGeneratorValidationInput<Engine>;
-
-type RandomNumberEngineAssertionResult<Engine extends RandomEngine> =
-  ValidatedRandomNumberEngine<Engine> & UniformRandomBitGeneratorValidationInput<Engine>;
+import type { KnownUniformRandomBitGenerator, RandomNumberEngine, UniformRandomBitGenerator, UniformRandomBitGeneratorStatic } from './engine';
 
 /**
  * Runtime-validates the observable UniformRandomBitGenerator requirements of
@@ -30,8 +15,8 @@ type RandomNumberEngineAssertionResult<Engine extends RandomEngine> =
  * @throws {RandomError} If static range functions are missing or invalid.
  */
 export function assertUniformRandomBitGenerator<Engine extends RandomEngine>(
-  engine: UniformRandomBitGeneratorValidationInput<Engine>
-): asserts engine is UniformRandomBitGeneratorAssertionResult<Engine> {
+  engine: UniformRandomBitGenerator<Engine>,
+): asserts engine is KnownUniformRandomBitGenerator<Engine> {
   const constructor = engine.constructor as Partial<UniformRandomBitGeneratorStatic>;
 
   if (typeof constructor.min !== 'function' || typeof constructor.max !== 'function') {
@@ -64,10 +49,10 @@ export function assertUniformRandomBitGenerator<Engine extends RandomEngine>(
  * @returns The same engine object with a compile-time proof marker.
  */
 export function toUniformRandomBitGenerator<Engine extends RandomEngine>(
-  engine: UniformRandomBitGeneratorValidationInput<Engine>
+  engine: Engine & UniformRandomBitGenerator<Engine>,
 ): KnownUniformRandomBitGenerator<Engine> {
   assertUniformRandomBitGenerator(engine);
-  return engine;
+  return engine as unknown as KnownUniformRandomBitGenerator<Engine>;
 }
 
 /**
@@ -82,11 +67,11 @@ export function toUniformRandomBitGenerator<Engine extends RandomEngine>(
  * requirements.
  */
 export function assertRandomNumberEngine<Engine extends RandomEngine>(
-  engine: UniformRandomBitGeneratorValidationInput<Engine>
-): asserts engine is RandomNumberEngineAssertionResult<Engine> {
+  engine: Engine & UniformRandomBitGenerator<Engine>,
+): asserts engine is RandomNumberEngine<Engine> {
   assertUniformRandomBitGenerator(engine);
 
-  const candidate = engine as Engine & {
+  const candidate = engine as RandomEngine & {
     seed?: unknown;
     discard?: unknown;
     equals?: unknown;
@@ -111,8 +96,8 @@ export function assertRandomNumberEngine<Engine extends RandomEngine>(
  * @returns The same engine object with compile-time RandomNumberEngine requirements.
  */
 export function toRandomNumberEngine<Engine extends RandomEngine>(
-  engine: UniformRandomBitGeneratorValidationInput<Engine>
-): ValidatedRandomNumberEngine<Engine> {
+  engine: Engine & UniformRandomBitGenerator<Engine>,
+): RandomNumberEngine<Engine> {
   assertRandomNumberEngine(engine);
-  return engine;
+  return engine as unknown as RandomNumberEngine<Engine>;
 }

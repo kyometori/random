@@ -1,9 +1,9 @@
 import { MinstdRand, MinstdRand0 } from '../src/generators';
 import { defineLinearCongruentialEngine } from '../src/engines/linearCongruentialEngine';
 import { UInt32Type, uint32 } from '../src/typings';
-import type { UInt32 } from '../src/typings';
-import type { UniformRandomBitGeneratorStatusOf } from '../src/concepts';
-import { toUniformRandomBitGenerator } from '../src/concepts'
+import type { RandomEngine, UInt32 } from '../src/typings';
+import type { RandomNumberEngine, UniformRandomBitGenerator, UniformRandomBitGeneratorStatusOf } from '../src/concepts';
+import { assertRandomNumberEngine, assertUniformRandomBitGenerator, toRandomNumberEngine, toUniformRandomBitGenerator } from '../src/concepts'
 import type { Equal, Expect } from './assert';
 
 type MinstdRand0Engine = InstanceType<typeof MinstdRand0>;
@@ -49,13 +49,25 @@ const InvalidUniformRandomBitGenerator = defineLinearCongruentialEngine(UInt32Ty
   modulus: uint32(1n),
 });
 
-declare const invalid: InvalidEngine;
-// @ts-expect-error
-assertUniformRandomBitGenerator(invalid);
-// @ts-expect-error
-toUniformRandomBitGenerator(invalid);
-
 type InvalidEngine = InstanceType<typeof InvalidUniformRandomBitGenerator>;
+
+declare const valid: InstanceType<typeof MinstdRand>;
+declare const invalid: InvalidEngine;
+assertUniformRandomBitGenerator(valid);
+toUniformRandomBitGenerator(valid);
+assertRandomNumberEngine(valid);
+toRandomNumberEngine(valid);
+
+function expectURBG<E extends RandomEngine>(e: UniformRandomBitGenerator<E>) {}
+function expectRNE<E extends RandomEngine>(b: RandomNumberEngine<E>) {}
+
+expectURBG(valid)
+// @ts-expect-error
+expectURBG(invalid)
+
+expectRNE(valid)
+// @ts-expect-error
+expectRNE(invalid)
 
 type InvalidMinimum = Expect<
   Equal<ReturnType<typeof InvalidUniformRandomBitGenerator.min>, UInt32<1n>>
