@@ -52,7 +52,7 @@ type UniformRandomBitGeneratorStatusMarker<Status extends UniformRandomBitGenera
  *
  * @internal
  */
-interface RandomLibraryConstraintError<Message extends string> {
+export interface RandomLibraryConstraintError<Message extends string> {
   readonly __randomLibraryConstraintError: Message;
 }
 
@@ -113,7 +113,7 @@ export type TypedRandomEngine<Type extends UInt, Traits extends RandomEngineTrai
 export type UniformRandomBitGenerator<Engine extends RandomEngine, Type extends UInt = RandomEngineResultType<Engine>> =
   [UniformRandomBitGeneratorStatusOf<Engine>] extends [false]
     ? Engine & RandomLibraryConstraintError<
-        'The engine is known not to satisfy UniformRandomBitGenerator because min() is not less than max.'
+        'The engine is known not to satisfy UniformRandomBitGenerator because min() is not less than max().'
       >
     : Engine & RandomEngine<Type>;
 
@@ -187,7 +187,7 @@ export type RandomNumberEngine<Engine extends RandomEngine, Type extends UInt = 
     ? Engine & RandomEngine<Type> & RandomNumberEngineRequirements<Engine, Type>
     : [UniformRandomBitGeneratorStatusOf<Engine>] extends [false]
       ? Engine & RandomLibraryConstraintError<
-          'The engine is known not to satisfy RandomNumberEngine because min() is not less than max.'
+          'The engine is known not to satisfy RandomNumberEngine because min() is not less than max().'
         >
       : Engine & RandomLibraryConstraintError<
           'The engine has unknown UniformRandomBitGenerator status and cannot satisfy RandomNumberEngine.'
