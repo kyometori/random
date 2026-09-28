@@ -4,17 +4,6 @@
 #include <iostream>
 #include <string>
 
-std::uint64_t parse_u64(const std::string& value) {
-  std::size_t consumed = 0;
-  auto result = std::stoull(value, &consumed, 0);
-
-  if (consumed != value.size()) {
-    throw std::runtime_error("invalid uint64: " + value);
-  }
-
-  return result;
-}
-
 template <typename Engine>
 void run_values(std::uint64_t seed, std::uint64_t discard, std::uint64_t count) {
   using result_type = typename Engine::result_type;
