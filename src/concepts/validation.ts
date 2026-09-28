@@ -15,7 +15,7 @@ import type { KnownUniformRandomBitGenerator, RandomNumberEngine, UniformRandomB
  * @throws {RandomError} If static range functions are missing or invalid.
  */
 export function assertUniformRandomBitGenerator<Engine extends RandomEngine>(
-  engine: UniformRandomBitGenerator<Engine>,
+  engine: UniformRandomBitGenerator<Engine>
 ): asserts engine is KnownUniformRandomBitGenerator<Engine> {
   const constructor = engine.constructor as Partial<UniformRandomBitGeneratorStatic>;
 
@@ -49,7 +49,7 @@ export function assertUniformRandomBitGenerator<Engine extends RandomEngine>(
  * @returns The same engine object with a compile-time proof marker.
  */
 export function toUniformRandomBitGenerator<Engine extends RandomEngine>(
-  engine: Engine & UniformRandomBitGenerator<Engine>,
+  engine: UniformRandomBitGenerator<Engine>
 ): KnownUniformRandomBitGenerator<Engine> {
   assertUniformRandomBitGenerator(engine);
   return engine as unknown as KnownUniformRandomBitGenerator<Engine>;
@@ -67,7 +67,7 @@ export function toUniformRandomBitGenerator<Engine extends RandomEngine>(
  * requirements.
  */
 export function assertRandomNumberEngine<Engine extends RandomEngine>(
-  engine: Engine & UniformRandomBitGenerator<Engine>,
+  engine: UniformRandomBitGenerator<Engine>
 ): asserts engine is RandomNumberEngine<Engine> {
   assertUniformRandomBitGenerator(engine);
 
@@ -96,7 +96,7 @@ export function assertRandomNumberEngine<Engine extends RandomEngine>(
  * @returns The same engine object with compile-time RandomNumberEngine requirements.
  */
 export function toRandomNumberEngine<Engine extends RandomEngine>(
-  engine: Engine & UniformRandomBitGenerator<Engine>,
+  engine: UniformRandomBitGenerator<Engine>
 ): RandomNumberEngine<Engine> {
   assertRandomNumberEngine(engine);
   return engine as unknown as RandomNumberEngine<Engine>;

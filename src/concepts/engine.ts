@@ -34,17 +34,6 @@ export interface RandomEngineTraits<Min extends bigint = bigint, Max extends big
 declare const randomEngineTraits: unique symbol;
 
 /**
- * Type-only witness that records a factory specialization's range proof.
- *
- * It is deliberately separate from the public URBG proof marker: a failed
- * assertion signature must not be able to overwrite a fact derived from an
- * engine's template arguments.
- *
- * @internal
- */
-export declare const randomEngineValidity: unique symbol;
-
-/**
  * Type-only witness used to declare that an external engine satisfies the
  * UniformRandomBitGenerator requirements.
  */
@@ -55,10 +44,6 @@ type UniformRandomBitGeneratorStatusMarker<Status extends UniformRandomBitGenera
     ? { readonly [uniformRandomBitGeneratorStatus]: Status }
     : {};
 
-type RandomEngineValidityMarker<Status extends UniformRandomBitGeneratorStatus> =
-  Status extends true | false
-    ? { readonly [randomEngineValidity]: Status }
-    : {};
 
 /**
  * Evaluates the UniformRandomBitGenerator range relation from engine traits.
@@ -99,7 +84,6 @@ export type UniformRandomBitGeneratorStatusOf<Engine extends RandomEngine> =
 export type TypedRandomEngine<Type extends UInt, Traits extends RandomEngineTraits> =
   RandomEngine<Type> &
   { readonly [randomEngineTraits]: Traits } &
-  RandomEngineValidityMarker<UniformRandomBitGeneratorStatusFromRandomEngineTraits<Traits>> &
   UniformRandomBitGeneratorStatusMarker<UniformRandomBitGeneratorStatusFromRandomEngineTraits<Traits>>;
 
 /**
@@ -128,7 +112,6 @@ export type UniformRandomBitGenerator<
   RandomEngine<Type> &
   {
     readonly [uniformRandomBitGeneratorStatus]?: true;
-    readonly [randomEngineValidity]?: true;
   };
 
 /**
@@ -206,7 +189,6 @@ export type RandomNumberEngine<
   RandomEngine<Type> &
   {
     readonly [uniformRandomBitGeneratorStatus]: true;
-    readonly [randomEngineValidity]?: true;
   } &
   RandomNumberEngineRequirements<Engine, Type>;
 
