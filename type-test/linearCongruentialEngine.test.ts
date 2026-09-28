@@ -52,20 +52,43 @@ const InvalidUniformRandomBitGenerator = defineLinearCongruentialEngine(UInt32Ty
 type InvalidEngine = InstanceType<typeof InvalidUniformRandomBitGenerator>;
 
 declare const valid: InstanceType<typeof MinstdRand>;
+declare const unknownEngine: RandomEngine<UInt32>;
 declare const invalid: InvalidEngine;
-assertUniformRandomBitGenerator(valid);
-toUniformRandomBitGenerator(valid);
-assertRandomNumberEngine(valid);
-toRandomNumberEngine(valid);
+
+() => assertUniformRandomBitGenerator(valid);
+() => toUniformRandomBitGenerator(valid);
+() => assertRandomNumberEngine(valid);
+() => toRandomNumberEngine(valid);
+
+() => assertUniformRandomBitGenerator(unknownEngine);
+() => toUniformRandomBitGenerator(unknownEngine);
+() => assertRandomNumberEngine(unknownEngine);
+() => toRandomNumberEngine(unknownEngine);
+
+// @ts-expect-error
+() => assertUniformRandomBitGenerator(invalid);
+// @ts-expect-error
+() => toUniformRandomBitGenerator(invalid);
+// @ts-expect-error
+() => assertRandomNumberEngine(invalid);
+// @ts-expect-error
+() => toRandomNumberEngine(invalid);
+
+// @ts-expect-error
+assertUniformRandomBitGenerator(invalid)
 
 function expectURBG<E extends RandomEngine>(e: UniformRandomBitGenerator<E>) {}
 function expectRNE<E extends RandomEngine>(b: RandomNumberEngine<E>) {}
 
+
 expectURBG(valid)
+expectURBG(unknownEngine)
 // @ts-expect-error
 expectURBG(invalid)
 
 expectRNE(valid)
+// @ts-expect-error
+expectRNE(unknownEngine)
 // @ts-expect-error
 expectRNE(invalid)
 
